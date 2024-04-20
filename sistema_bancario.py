@@ -11,7 +11,7 @@ def sacar():
     global saldo, limite, extrato, numero_saques, LIMITE_SAQUES
     
     if numero_saques >= LIMITE_SAQUES:
-        messagebox.showerror(title='Limite atingido!', message='Você ultrapassou o limite de saques diários!')
+        messagebox.showerror(title='Limite atingido', message='Você ultrapassou o limite de saques diários')
         return
     
     valor = simpledialog.askstring('Operação de saque', 'Digite o valor a ser sacado')
@@ -28,11 +28,11 @@ def sacar():
         return
     
     if valor > limite:
-        messagebox.showerror(title='Erro', message='Valor acima do limite!')
+        messagebox.showerror(title='Erro', message='Valor acima do limite')
         return
     
     if valor > saldo:
-        messagebox.showerror(title='Erro', message='Saldo não suficiente!')
+        messagebox.showerror(title='Erro', message='Saldo não suficiente')
         return
     
     saldo -= valor
