@@ -1,0 +1,185 @@
+{
+    "dados_usuarios": [
+        {
+            "nome": "Im Nayeon",
+            "data_nascimento": "22/09/1995",
+            "cpf": 12345678900,
+            "endereco": "Seul, Coreia do Sul",
+            "contas": [
+                0,
+                5,
+                9
+            ]
+        },
+        {
+            "nome": "Yoo Jeongyeon",
+            "data_nascimento": "01/11/1996",
+            "cpf": 23456789011,
+            "endereco": "Suwon, Coreia do Sul",
+            "contas": [
+                1,
+                6
+            ]
+        },
+        {
+            "nome": "Hirai Momo",
+            "data_nascimento": "09/11/1996",
+            "cpf": 34567890122,
+            "endereco": "Kyoto, Jap\u00e3o",
+            "contas": [
+                2,
+                7,
+                8
+            ]
+        },
+        {
+            "nome": "Minatozaki Sana",
+            "data_nascimento": "29/12/1996",
+            "cpf": 45678901233,
+            "endereco": "Osaka, Jap\u00e3o",
+            "contas": [
+                3
+            ]
+        },
+        {
+            "nome": "Park Jihyo",
+            "data_nascimento": "01/02/1997",
+            "cpf": 56789012344,
+            "endereco": "Guri, Coreia do Sul",
+            "contas": [
+                4
+            ]
+        },
+        {
+            "nome": "Myoui Mina",
+            "data_nascimento": "24/03/1997",
+            "cpf": 67890123455,
+            "endereco": "San Antonio, Estados Unidos",
+            "contas": []
+        },
+        {
+            "nome": "Kim Dahyun",
+            "data_nascimento": "28/05/1998",
+            "cpf": 78901234566,
+            "endereco": "Seongnam, Coreia do Sul",
+            "contas": []
+        },
+        {
+            "nome": "Son Chaeyoung",
+            "data_nascimento": "23/04/1999",
+            "cpf": 89012345677,
+            "endereco": "Seul, Coreia do Sul",
+            "contas": []
+        },
+        {
+            "nome": "Chou Tzuyu",
+            "data_nascimento": "14/06/1999",
+            "cpf": 90123456788,
+            "endereco": "Tainan, Taiwan",
+            "contas": [
+                10
+            ]
+        }
+    ],
+    "contas_correntes": [
+        {
+            "id": 0,
+            "cpf": 12345678900,
+            "saldo": 499993.5,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 500000.00\nSaque: -R$ 1.50\nSaque: -R$ 5.00\n",
+            "numero_saques": 2,
+            "LIMITE_SAQUE": 3
+        },
+        {
+            "id": 1,
+            "cpf": 23456789011,
+            "saldo": 29999.5,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 0.50\nSaque: -R$ 0.25\nDep\u00f3sito: +R$ 30000.00\nSaque: -R$ 0.75\n",
+            "numero_saques": 2,
+            "LIMITE_SAQUE": 3
+        },
+        {
+            "id": 2,
+            "cpf": 34567890122,
+            "saldo": 1.0,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 1.00\n",
+            "numero_saques": 0,
+            "LIMITE_SAQUE": 3
+        },
+        {
+            "id": 3,
+            "cpf": 45678901233,
+            "saldo": 29999950.0,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 30000000.00\nSaque: -R$ 50.00\n",
+            "numero_saques": 1,
+            "LIMITE_SAQUE": 3
+        },
+        {
+            "id": 4,
+            "cpf": 56789012344,
+            "saldo": 100000000.0,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 100000000.00\n",
+            "numero_saques": 0,
+            "LIMITE_SAQUE": 3
+        },
+        {
+            "id": 5,
+            "cpf": 12345678900,
+            "saldo": 1500005.0,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 1500000.00\nDep\u00f3sito: +R$ 5.00\n",
+            "numero_saques": 0,
+            "LIMITE_SAQUE": 3
+        },
+        {
+            "id": 6,
+            "cpf": 23456789011,
+            "saldo": 123.45,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 123.45\n",
+            "numero_saques": 0,
+            "LIMITE_SAQUE": 3
+        },
+        {
+            "id": 7,
+            "cpf": 34567890122,
+            "saldo": 2.0,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 2.00\n",
+            "numero_saques": 0,
+            "LIMITE_SAQUE": 3
+        },
+        {
+            "id": 8,
+            "cpf": 34567890122,
+            "saldo": 3.0,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 503.00\nSaque: -R$ 500.00\n",
+            "numero_saques": 1,
+            "LIMITE_SAQUE": 3
+        },
+        {
+            "id": 9,
+            "cpf": 12345678900,
+            "saldo": 321.0,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 100.00\nDep\u00f3sito: +R$ 250.00\nDep\u00f3sito: +R$ 1.00\nSaque: -R$ 5.00\nSaque: -R$ 10.00\nSaque: -R$ 15.00\n",
+            "numero_saques": 3,
+            "LIMITE_SAQUE": 3
+        },
+        {
+            "id": 10,
+            "cpf": 90123456788,
+            "saldo": 999500.0,
+            "limite": 500,
+            "extrato": "Dep\u00f3sito: +R$ 1000000.00\nSaque: -R$ 500.00\n",
+            "numero_saques": 1,
+            "LIMITE_SAQUE": 3
+        }
+    ]
+}
