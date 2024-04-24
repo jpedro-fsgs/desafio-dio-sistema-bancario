@@ -12,3 +12,8 @@
   - Opção de abrir múltiplas contas correntes para cada usuário.
   - Dados do usuário e das contas são lidos e salvos em um arquivo .json.
   - Interface gráfica feita com tkinter.
+
+- **sistema_bancario_v3:** 
+  - Implementação de classes.
+  - Objetos são lidos e salvos com o módulo Pickle
+  - Interface gráfica feita com tkinter.
