@@ -1,0 +1,68 @@
+{
+    "dados_usuarios": [
+      {
+        "nome": "Im Nayeon",
+        "data_nascimento": "22/09/1995",
+        "cpf": 12345678900,
+        "endereco": "Seul, Coreia do Sul",
+        "contas": []
+      },
+      {
+        "nome": "Yoo Jeongyeon",
+        "data_nascimento": "01/11/1996",
+        "cpf": 23456789011,
+        "endereco": "Suwon, Coreia do Sul",
+        "contas": []
+      },
+      {
+        "nome": "Hirai Momo",
+        "data_nascimento": "09/11/1996",
+        "cpf": 34567890122,
+        "endereco": "Kyoto, Japão",
+        "contas": []
+      },
+      {
+        "nome": "Minatozaki Sana",
+        "data_nascimento": "29/12/1996",
+        "cpf": 45678901233,
+        "endereco": "Osaka, Japão",
+        "contas": []
+      },
+      {
+        "nome": "Park Jihyo",
+        "data_nascimento": "01/02/1997",
+        "cpf": 56789012344,
+        "endereco": "Guri, Coreia do Sul",
+        "contas": []
+      },
+      {
+        "nome": "Myoui Mina",
+        "data_nascimento": "24/03/1997",
+        "cpf": 67890123455,
+        "endereco": "San Antonio, Estados Unidos",
+        "contas": []
+      },
+      {
+        "nome": "Kim Dahyun",
+        "data_nascimento": "28/05/1998",
+        "cpf": 78901234566,
+        "endereco": "Seongnam, Coreia do Sul",
+        "contas": []
+      },
+      {
+        "nome": "Son Chaeyoung",
+        "data_nascimento": "23/04/1999",
+        "cpf": 89012345677,
+        "endereco": "Seul, Coreia do Sul",
+        "contas": []
+      },
+      {
+        "nome": "Chou Tzuyu",
+        "data_nascimento": "14/06/1999",
+        "cpf": 90123456788,
+        "endereco": "Tainan, Taiwan",
+        "contas": []
+      }
+    ],
+    "contas_correntes": []
+  }

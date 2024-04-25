@@ -1,26 +1,10 @@
-from tkinter import Tk, Label, Button, Frame, simpledialog, messagebox, Entry, Listbox, Menu
+# from tkinter import Tk, Label, Button, Frame, simpledialog, messagebox, Entry, Listbox, Menu, IntVar, Checkbutton, ttk
+from tkinter import *
+from tkinter.ttk import *
 import pickle
+from tkinter import messagebox, simpledialog
 from sistema_bancario_v3 import *
 
-class Banco:
-    def __init__(self, nome_banco) -> None:
-        self.nome_banco = nome_banco 
-        self.clientes = []
-        self.contas = []
-        self.houve_alteracao = False
-
-    def add_cliente(self, endereco, cpf, nome, data_nascimento):
-        self.clientes.append(PessoaFisica(endereco, cpf, nome, data_nascimento))
-        self.houve_alteracao = True
-        return True
-
-    def add_conta(self, cliente, saldo=0):
-        id_conta = len(self.contas) + 1
-        nova_conta = ContaCorrente(cliente, id_conta, saldo)
-        self.contas.append(nova_conta)
-        cliente.adicionar_conta(nova_conta)
-        self.houve_alteracao = True
-        return True
 
 class InterfaceBanco(Tk):
     def __init__(self, banco, screenName: str | None = None, baseName: str | None = None, className: str = "Tk", useTk: bool = True, sync: bool = False, use: str | None = None) -> None:
@@ -29,8 +13,7 @@ class InterfaceBanco(Tk):
         self.banco = banco
         
         self.title(banco.nome_banco)
-        self.geometry('300x170')
-        self.eval('tk::PlaceWindow . center')
+        self.geometry('300x170+380+280')
 
         self.botoes_contas = []
 
@@ -38,6 +21,7 @@ class InterfaceBanco(Tk):
         configuracoes = Menu(menubar, tearoff=0)
 
         configuracoes.add_command(label='Limpar todos os dados', command=self.limpar_dados)
+        configuracoes.add_command(label='Resetar aos padrões', command=self.resetar_padroes)
 
         menubar.add_cascade(label='Configurações', menu=configuracoes)
 
@@ -57,7 +41,17 @@ class InterfaceBanco(Tk):
             self.title(self.banco.nome_banco)
             self.banco.houve_alteracao = True
 
-    
+    def resetar_padroes(self):
+        confirm = messagebox.showwarning(title='Atenção', message='Esta ação irá apagar todos os clientes e contas adicionadas. Deseja continuar?', type='okcancel') 
+        if confirm == 'ok':
+            novo_banco = Banco('TWICE Bank')
+            if novo_banco.carregar_clientes():
+                messagebox.showerror(title='Erro', message='Arquivo .json não encontrado')
+                return
+            self.banco = novo_banco
+            self.title(self.banco.nome_banco)
+            self.banco.houve_alteracao = True
+ 
     def salvar_dados_usuario(self, janela, nome, data_nascimento, cpf, endereco):      
             if not (nome and data_nascimento and cpf and endereco):
                 messagebox.showerror(title='Erro', message='Não pode haver campos vazios')
@@ -81,7 +75,7 @@ class InterfaceBanco(Tk):
     def adicionar_usuario(self):
         janela_adicionar_usuario = Tk()
         janela_adicionar_usuario.title('Adicionar Usuário')
-        janela_adicionar_usuario.eval('tk::PlaceWindow . center')
+        janela_adicionar_usuario.geometry('350x250+680+280')
 
         label_titulo = Label(janela_adicionar_usuario, text='Insira os dados do usuário')
         label_titulo.pack(padx=15, pady=15)
@@ -159,8 +153,7 @@ class InterfaceBanco(Tk):
         
         janela_selecionar_usuario = Tk()
         janela_selecionar_usuario.title('Selecionar Usuário')
-        janela_selecionar_usuario.geometry('700x275')
-        janela_selecionar_usuario.eval('tk::PlaceWindow . center')
+        janela_selecionar_usuario.geometry('700x275+680+280')
 
         frame_usuarios = Frame(janela_selecionar_usuario)
         frame_usuarios.grid(row=0, column=0, pady=25, padx=25)
@@ -179,7 +172,7 @@ class InterfaceBanco(Tk):
         frame_botoes = Frame(janela_selecionar_usuario)
         frame_botoes.grid(row=1, column=1)
 
-        for i in self.banco.clientes: lista_usuarios.insert('end', i)
+        for i in self.banco: lista_usuarios.insert('end', i)
         
         lista_usuarios.bind("<ButtonRelease-1>", lambda x: self.mostrar_info(label_info_contas=label_info_contas, 
                                                                              label_titulo=label_titulo, 
@@ -228,8 +221,15 @@ class InterfaceBanco(Tk):
             self.banco.houve_alteracao = True
 
         def emitir_extrato():
-            mensagem_extrato = conta.historico
+            mensagem_extrato = conta.historico.log_transacao(mostrar_saque=check_saque_var.get(), 
+                                                             mostrar_deposito=check_deposito_var.get())
+            messagebox.showinfo(title=conta, message=mensagem_extrato)
 
+        def emitir_extrato_hoje():
+            mensagem_extrato = conta.historico.log_transacao(mostrar_saque=check_saque_var.get(), 
+                                                             mostrar_deposito=check_deposito_var.get(), 
+                                                             hoje=True)
+            
             messagebox.showinfo(title=conta, message=mensagem_extrato)
         
         def att_saldo():
@@ -238,9 +238,7 @@ class InterfaceBanco(Tk):
 
         janela_usuario = Tk()
         janela_usuario.title("Operações Financeiras")
-        janela_usuario.geometry('400x200')
-        janela_usuario.eval('tk::PlaceWindow . center')
-        
+        janela_usuario.geometry('525x225+880+315')
 
         frame_saldo = Frame(janela_usuario)
         frame_saldo.pack(padx=50, pady=25)
@@ -256,9 +254,21 @@ class InterfaceBanco(Tk):
 
         botao_sacar = Button(frame_botoes, text='Sacar', command=sacar)
         botao_sacar.grid(row=0, column=1, padx=15)
+        
+        botao_extrato_hoje = Button(frame_botoes, text='Extrato Hoje', command=emitir_extrato_hoje, width=15)
+        botao_extrato_hoje.grid(row=0, column=2,  padx=15)
 
-        botao_extrato = Button(frame_botoes, text='Extrato', command=emitir_extrato)
-        botao_extrato.grid(row=0, column=2, padx=15)
+        botao_extrato = Button(frame_botoes, text='Extrato Geral', command=emitir_extrato, width=15)
+        botao_extrato.grid(row=1, column=2, padx=15)
+
+        check_saque_var = BooleanVar(frame_botoes, value=True)
+        check_deposito_var = BooleanVar(frame_botoes, value=True)
+        
+        check_saque_button = Checkbutton(frame_botoes, text='Saque', var=check_saque_var)
+        check_saque_button.grid(row=0, column=3)
+        
+        check_deposito_button = Checkbutton(frame_botoes, text='Depósito', var=check_deposito_var)
+        check_deposito_button.grid(row=1, column=3)
 
         def set_limite_valor_saque():  
             valor = simpledialog.askstring('Limite do valor de saque', f'Digite o valor do limite de saque\nAtual: R${conta.limite:.2f}')
@@ -275,6 +285,7 @@ class InterfaceBanco(Tk):
                 return
             
             conta.limite = valor
+            self.banco.houve_alteracao = True
 
         def set_limite_saques():  
             valor = simpledialog.askstring('Limite de saques', f'Digite a quantidade do limite de saques\nAtual: {conta.limite_saques}\nUtilizados: {conta.saques_diarios}')
@@ -290,6 +301,7 @@ class InterfaceBanco(Tk):
                 return
             
             conta.limite_saques = valor
+            self.banco.houve_alteracao = True
         
         menubar = Menu(janela_usuario)
         configuracoes = Menu(menubar, tearoff=0)
@@ -315,7 +327,7 @@ if __name__ == '__main__':
     UIB = InterfaceBanco(twice_bank)
 
     if UIB.banco.houve_alteracao:
-        if messagebox.askokcancel(title='Salvamento', message='Salvar Alterações?'):
+        if messagebox.askokcancel(title='Salvamento', message='Salvar alterações?'):
             with open('desafio-dio-sistema-bancario/twicebankdata.pkl', 'wb') as file:
                 UIB.banco.houve_alteracao = False
                 pickle.dump(UIB.banco, file)

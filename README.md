@@ -17,3 +17,7 @@
   - Implementação de classes.
   - Objetos são lidos e salvos com o módulo Pickle
   - Interface gráfica feita com tkinter.
+
+  - Verificação de saques diários.
+  - Opção de extrato diário ou geral.
+  - Opção de incluir ou excluir depósitos e saques do extrato.
