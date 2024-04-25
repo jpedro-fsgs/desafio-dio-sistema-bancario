@@ -3,25 +3,23 @@ import pickle
 from sistema_bancario_v3 import *
 
 class Banco:
-    def __init__(self, nome_banco, load_file=None) -> None:
+    def __init__(self, nome_banco) -> None:
         self.nome_banco = nome_banco 
-        self.numero_clientes = 0
-        self.numero_contas = 0
         self.clientes = []
         self.contas = []
+        self.houve_alteracao = False
 
     def add_cliente(self, endereco, cpf, nome, data_nascimento):
-        self.numero_clientes += 1
-        id_cliente = self.numero_clientes
         self.clientes.append(PessoaFisica(endereco, cpf, nome, data_nascimento))
+        self.houve_alteracao = True
         return True
 
     def add_conta(self, cliente, saldo=0):
-        self.numero_contas += 1
-        id_conta = self.numero_contas
+        id_conta = len(self.contas) + 1
         nova_conta = ContaCorrente(cliente, id_conta, saldo)
         self.contas.append(nova_conta)
         cliente.adicionar_conta(nova_conta)
+        self.houve_alteracao = True
         return True
 
 class InterfaceBanco(Tk):
@@ -54,11 +52,10 @@ class InterfaceBanco(Tk):
         
     def limpar_dados(self):
         confirm = messagebox.showwarning(title='Atenção', message='Esta ação irá deletar o banco e todos os dados de clientes e contas. Deseja continuar?', type='okcancel') 
-        if confirm == 'cancel':
-            return
         if confirm == 'ok':
-            self.banco = Banco(simpledialog.askstring('Novo Banco', f'Digite o novo nome do Banco'))
+            self.banco = Banco(simpledialog.askstring('Novo Banco', 'Digite o novo nome do Banco'))
             self.title(self.banco.nome_banco)
+            self.banco.houve_alteracao = True
 
     
     def salvar_dados_usuario(self, janela, nome, data_nascimento, cpf, endereco):      
@@ -209,6 +206,7 @@ class InterfaceBanco(Tk):
             if registro != 'sucesso':
                  messagebox.showerror(title='Erro', message=registro)
             att_saldo()
+            self.banco.houve_alteracao = True
 
         def depositar():
 
@@ -227,6 +225,7 @@ class InterfaceBanco(Tk):
             
             Deposito(valor).registrar(conta)
             att_saldo()
+            self.banco.houve_alteracao = True
 
         def emitir_extrato():
             mensagem_extrato = conta.historico
@@ -306,10 +305,17 @@ class InterfaceBanco(Tk):
         janela_usuario.mainloop()
 
 if __name__ == '__main__':
-    with open('desafio-dio-sistema-bancario/twicebankdata.pkl', 'rb') as file:
-        twice_bank = pickle.load(file)
+    try:
+        with open('desafio-dio-sistema-bancario/twicebankdata.pkl', 'rb') as file:
+            twice_bank = pickle.load(file)
+    except:
+        twice_bank = Banco(simpledialog.askstring('Novo Banco', 'Digite o novo nome do Banco'))
+        twice_bank.houve_alteracao = True
     
     UIB = InterfaceBanco(twice_bank)
 
-    with open('desafio-dio-sistema-bancario/twicebankdata.pkl', 'wb') as file:
-        pickle.dump(UIB.banco, file)
+    if UIB.banco.houve_alteracao:
+        if messagebox.askokcancel(title='Salvamento', message='Salvar Alterações?'):
+            with open('desafio-dio-sistema-bancario/twicebankdata.pkl', 'wb') as file:
+                UIB.banco.houve_alteracao = False
+                pickle.dump(UIB.banco, file)
