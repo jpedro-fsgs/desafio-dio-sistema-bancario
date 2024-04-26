@@ -20,4 +20,6 @@
 
   - Verificação de saques diários.
   - Opção de extrato diário ou geral.
-  - Opção de incluir ou excluir depósitos e saques do extrato.
+  - Opção de incluir ou excluir depósitos e saques no geramento do extrato.
+  - Opção de limpar todos os dados e resetar aos padrões.
+  - Adicionado log de operações.

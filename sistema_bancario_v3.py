@@ -70,7 +70,7 @@ class Conta:
                 f'Agência: {self.agencia}\n'+
                 f'Número da Conta: {self.numero}\n'+
                 f'Saldo: {self.saldo}\n')
-    
+
 class ContaCorrente(Conta):
     _limite_padrao = 500
     _limite_saques_padrao = 10
@@ -126,7 +126,7 @@ class Historico:
             })
 
 
-    def log_transacao(self, mostrar_saque=True, mostrar_deposito=True, hoje=False):
+    def extrato(self, mostrar_saque=True, mostrar_deposito=True, hoje=False):
         
         output = ''
         for transacao in self.transacoes:
@@ -140,9 +140,10 @@ class Historico:
         return '\tHistórico de Transações:\n\n' + output
     
     def __str__(self):
-        return self.log_transacao()
+        return self.extrato()
 
-class Transacao(ABC):
+
+class Transacao(ABC):   
     @abstractclassmethod
     def registrar(conta):
         pass
@@ -159,8 +160,6 @@ class Saque(Transacao):
             return 'sucesso'
         else:
             return sucesso[1]
-
-
 
 class Deposito(Transacao):
     def __init__(self, valor):
@@ -182,6 +181,7 @@ class Banco:
         self.contas = []
         self.houve_alteracao = False
         self.index = 0
+        self.log = ''
 
     def __iter__(self):
         return self
@@ -217,6 +217,7 @@ class Banco:
                                     cpf=cliente["cpf"],
                                     nome=cliente["nome"],
                                     data_nascimento=cliente["data_nascimento"])
+            
         except: 
             return 'Erro'
 

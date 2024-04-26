@@ -5,21 +5,27 @@ import pickle
 from tkinter import messagebox, simpledialog
 from sistema_bancario_v3 import *
 
-
 class InterfaceBanco(Tk):
-    def __init__(self, banco, screenName: str | None = None, baseName: str | None = None, className: str = "Tk", useTk: bool = True, sync: bool = False, use: str | None = None) -> None:
+    def __init__(self, banco, screenName: str | None = None, baseName: str | None = None, 
+                 className: str = "Tk", useTk: bool = True, sync: bool = False, 
+                 use: str | None = None) -> None:
         super().__init__(screenName, baseName, className, useTk, sync, use)
 
         self.banco = banco
+        self._log = self.banco.log
         
         self.title(banco.nome_banco)
         self.geometry('300x170+380+280')
 
         self.botoes_contas = []
+        self.janela_selecionar_usuario = None
+        self.janela_adicionar_usuario = None
+        self.janela_conta = None
 
         menubar = Menu(self)
         configuracoes = Menu(menubar, tearoff=0)
 
+        configuracoes.add_command(label='Log de Eventos', command=self.ver_log_eventos)
         configuracoes.add_command(label='Limpar todos os dados', command=self.limpar_dados)
         configuracoes.add_command(label='Resetar aos padrões', command=self.resetar_padroes)
 
@@ -32,14 +38,28 @@ class InterfaceBanco(Tk):
 
         botao_adicionar = Button(self, text='Adicionar usuário', command=self.adicionar_usuario)
         botao_adicionar.pack(pady=25)
+        
+        def on_closing():
+            if self.janela_selecionar_usuario: self.janela_selecionar_usuario.destroy()
+            if self.janela_adicionar_usuario: self.janela_adicionar_usuario.destroy()
+            if self.janela_conta: self.janela_conta.destroy()
+            self.destroy()
+        
+        self.protocol("WM_DELETE_WINDOW", on_closing)
+
         self.mainloop()
         
+    def ver_log_eventos(self):
+        messagebox.showinfo(title='Log de Eventos', message=self.log)
+
     def limpar_dados(self):
         confirm = messagebox.showwarning(title='Atenção', message='Esta ação irá deletar o banco e todos os dados de clientes e contas. Deseja continuar?', type='okcancel') 
         if confirm == 'ok':
             self.banco = Banco(simpledialog.askstring('Novo Banco', 'Digite o novo nome do Banco'))
+            self._log = self.banco.log
             self.title(self.banco.nome_banco)
-            self.banco.houve_alteracao = True
+            self.adicionar_log(self.limpar_dados)
+            self.houve_alteracao = True
 
     def resetar_padroes(self):
         confirm = messagebox.showwarning(title='Atenção', message='Esta ação irá apagar todos os clientes e contas adicionadas. Deseja continuar?', type='okcancel') 
@@ -49,10 +69,12 @@ class InterfaceBanco(Tk):
                 messagebox.showerror(title='Erro', message='Arquivo .json não encontrado')
                 return
             self.banco = novo_banco
+            self._log = self.banco.log
             self.title(self.banco.nome_banco)
-            self.banco.houve_alteracao = True
+            self.adicionar_log(self.resetar_padroes)
+            self.houve_alteracao = True
  
-    def salvar_dados_usuario(self, janela, nome, data_nascimento, cpf, endereco):      
+    def salvar_dados_usuario(self, nome, data_nascimento, cpf, endereco):      
             if not (nome and data_nascimento and cpf and endereco):
                 messagebox.showerror(title='Erro', message='Não pode haver campos vazios')
                 return
@@ -70,17 +92,31 @@ class InterfaceBanco(Tk):
             self.banco.add_cliente(endereco, cpf, nome, data_nascimento)
             messagebox.showinfo(title='Usuário cadastrado', message=f'{nome} cadastrado(a) com sucesso!')
 
-            janela.destroy()
+            self.adicionar_log(self.salvar_dados_usuario)
+            self.janela_adicionar_usuario.destroy()
+            self.janela_adicionar_usuario = None
     
     def adicionar_usuario(self):
-        janela_adicionar_usuario = Tk()
-        janela_adicionar_usuario.title('Adicionar Usuário')
-        janela_adicionar_usuario.geometry('350x250+680+280')
+        if self.janela_selecionar_usuario:
+            self.janela_selecionar_usuario.destroy()
+            self.janela_selecionar_usuario = None
 
-        label_titulo = Label(janela_adicionar_usuario, text='Insira os dados do usuário')
+        if self.janela_conta:
+            self.janela_conta.destroy()
+            self.janela_conta = None
+
+        if self.janela_adicionar_usuario: 
+            self.janela_adicionar_usuario.destroy()
+            self.janela_adicionar_usuario = None
+        
+        self.janela_adicionar_usuario = Tk()
+        self.janela_adicionar_usuario.title('Adicionar Usuário')
+        self.janela_adicionar_usuario.geometry('350x250+680+280')
+
+        label_titulo = Label(self.janela_adicionar_usuario, text='Insira os dados do usuário')
         label_titulo.pack(padx=15, pady=15)
         
-        frame_dados = Frame(janela_adicionar_usuario)
+        frame_dados = Frame(self.janela_adicionar_usuario)
         frame_dados.pack()
 
         label_nome = Label(frame_dados, text='Nome: ')
@@ -103,14 +139,19 @@ class InterfaceBanco(Tk):
         label_endereco.grid(row=3, column=0, padx=5, pady=5)
         entry_endereco.grid(row=3, column=1, padx=5, pady=5)
 
-        botao_confirmar = Button(janela_adicionar_usuario, text='Adicionar', command=lambda: self.salvar_dados_usuario(janela=janela_adicionar_usuario, 
-                                                                                                                       nome=entry_nome.get(),
+        botao_confirmar = Button(self.janela_adicionar_usuario, text='Adicionar', command=lambda: self.salvar_dados_usuario(nome=entry_nome.get(),
                                                                                                                        data_nascimento=entry_data_nascimento.get(),
                                                                                                                        cpf=entry_cpf.get(),
                                                                                                                        endereco=entry_endereco.get()))
+        
         botao_confirmar.pack(padx=15, pady=15)
 
-        janela_adicionar_usuario.mainloop()
+        def on_closing():
+            self.janela_adicionar_usuario.destroy()
+            self.janela_adicionar_usuario = None
+
+        
+        self.janela_adicionar_usuario.protocol("WM_DELETE_WINDOW", on_closing)
 
     def update_botoes(self, cliente, label_info_contas, frame_botoes):
             ncontas = len(cliente.contas)
@@ -139,7 +180,7 @@ class InterfaceBanco(Tk):
             cliente = self.banco.clientes[index]
             label_titulo['text'] = cliente.dados()
 
-            label_info_contas.pack()
+            label_info_contas.pack(anchor='w')
 
             self.update_botoes(cliente, label_info_contas=label_info_contas, 
                              frame_botoes=frame_botoes)
@@ -147,21 +188,31 @@ class InterfaceBanco(Tk):
     def criar_conta(self, cliente, frame_botoes, label_info_contas):
          self.banco.add_conta(cliente)
          self.update_botoes(cliente, label_info_contas, frame_botoes)
+         self.adicionar_log(self.criar_conta)
          
     def selecionar_usuario(self):
+        
+        if self.janela_adicionar_usuario:
+            self.janela_adicionar_usuario.destroy()
+            self.janela_adicionar_usuario = None
+        
         self.botoes_contas.clear()
         
-        janela_selecionar_usuario = Tk()
-        janela_selecionar_usuario.title('Selecionar Usuário')
-        janela_selecionar_usuario.geometry('700x275+680+280')
+        if self.janela_selecionar_usuario: 
+            self.janela_selecionar_usuario.destroy()
+            self.janela_selecionar_usuario = None
+        
+        self.janela_selecionar_usuario = Tk()
+        self.janela_selecionar_usuario.title('Selecionar Usuário')
+        self.janela_selecionar_usuario.geometry('700x275+680+280')
 
-        frame_usuarios = Frame(janela_selecionar_usuario)
+        frame_usuarios = Frame(self.janela_selecionar_usuario)
         frame_usuarios.grid(row=0, column=0, pady=25, padx=25)
 
         lista_usuarios = Listbox(frame_usuarios, width=31)
         lista_usuarios.pack()
 
-        frame_info = Frame(janela_selecionar_usuario)
+        frame_info = Frame(self.janela_selecionar_usuario)
         frame_info.grid(row=0, column=1, pady=25, padx=25)
 
         label_titulo = Label(frame_info, text='Selecione o Usuário', justify='left')
@@ -169,8 +220,8 @@ class InterfaceBanco(Tk):
 
         label_info_contas = Label(frame_info, justify='left')
 
-        frame_botoes = Frame(janela_selecionar_usuario)
-        frame_botoes.grid(row=1, column=1)
+        frame_botoes = Frame(self.janela_selecionar_usuario)
+        frame_botoes.grid(row=1, column=1, sticky='W')
 
         for i in self.banco: lista_usuarios.insert('end', i)
         
@@ -178,6 +229,16 @@ class InterfaceBanco(Tk):
                                                                              label_titulo=label_titulo, 
                                                                              lista_usuarios=lista_usuarios,
                                                                              frame_botoes=frame_botoes))
+        
+        def on_closing():
+            if self.janela_conta:
+                self.janela_conta.destroy()
+                self.janela_conta = None
+            self.janela_selecionar_usuario.destroy()
+            self.janela_selecionar_usuario = None
+
+        
+        self.janela_selecionar_usuario.protocol("WM_DELETE_WINDOW", on_closing)
 
     def abrir_janela_conta(self, conta):
         
@@ -198,8 +259,10 @@ class InterfaceBanco(Tk):
             registro = Saque(valor).registrar(conta)
             if registro != 'sucesso':
                  messagebox.showerror(title='Erro', message=registro)
+                 return
             att_saldo()
-            self.banco.houve_alteracao = True
+            self.adicionar_log(sacar)
+            self.houve_alteracao = True
 
         def depositar():
 
@@ -218,35 +281,42 @@ class InterfaceBanco(Tk):
             
             Deposito(valor).registrar(conta)
             att_saldo()
-            self.banco.houve_alteracao = True
+            self.adicionar_log(depositar)
+            self.houve_alteracao = True
 
         def emitir_extrato():
-            mensagem_extrato = conta.historico.log_transacao(mostrar_saque=check_saque_var.get(), 
+            mensagem_extrato = conta.historico.extrato(mostrar_saque=check_saque_var.get(), 
                                                              mostrar_deposito=check_deposito_var.get())
             messagebox.showinfo(title=conta, message=mensagem_extrato)
+            self.adicionar_log(emitir_extrato)
 
         def emitir_extrato_hoje():
-            mensagem_extrato = conta.historico.log_transacao(mostrar_saque=check_saque_var.get(), 
+            mensagem_extrato = conta.historico.extrato(mostrar_saque=check_saque_var.get(), 
                                                              mostrar_deposito=check_deposito_var.get(), 
                                                              hoje=True)
             
             messagebox.showinfo(title=conta, message=mensagem_extrato)
+            self.adicionar_log(emitir_extrato_hoje)
         
         def att_saldo():
              label_saldo["text"] = f'{conta.cliente}\nAgência: {conta.agencia} C/C: {conta.numero}\nSaldo: R$ {conta.saldo:.2f}'
 
 
-        janela_usuario = Tk()
-        janela_usuario.title("Operações Financeiras")
-        janela_usuario.geometry('525x225+880+315')
+        if self.janela_conta: 
+            self.janela_conta.destroy()
+            self.janela_conta = None
+        
+        self.janela_conta = Tk()
+        self.janela_conta.title("Operações Financeiras")
+        self.janela_conta.geometry('525x225+680+586')
 
-        frame_saldo = Frame(janela_usuario)
+        frame_saldo = Frame(self.janela_conta)
         frame_saldo.pack(padx=50, pady=25)
 
         label_saldo = Label(frame_saldo, text=f'{conta.cliente}\n{conta}\nSaldo: R$ {conta.saldo:.2f}')
         label_saldo.grid(row=0, column=0)
 
-        frame_botoes = Frame(janela_usuario)
+        frame_botoes = Frame(self.janela_conta)
         frame_botoes.pack(pady=25)
 
         botao_depositar = Button(frame_botoes, text='Depositar', command=depositar)
@@ -265,10 +335,10 @@ class InterfaceBanco(Tk):
         check_deposito_var = BooleanVar(frame_botoes, value=True)
         
         check_saque_button = Checkbutton(frame_botoes, text='Saque', var=check_saque_var)
-        check_saque_button.grid(row=0, column=3)
+        check_saque_button.grid(row=0, column=3, sticky='W')
         
         check_deposito_button = Checkbutton(frame_botoes, text='Depósito', var=check_deposito_var)
-        check_deposito_button.grid(row=1, column=3)
+        check_deposito_button.grid(row=1, column=3, sticky='W')
 
         def set_limite_valor_saque():  
             valor = simpledialog.askstring('Limite do valor de saque', f'Digite o valor do limite de saque\nAtual: R${conta.limite:.2f}')
@@ -285,7 +355,8 @@ class InterfaceBanco(Tk):
                 return
             
             conta.limite = valor
-            self.banco.houve_alteracao = True
+            self.adicionar_log(set_limite_valor_saque)
+            self.houve_alteracao = True
 
         def set_limite_saques():  
             valor = simpledialog.askstring('Limite de saques', f'Digite a quantidade do limite de saques\nAtual: {conta.limite_saques}\nUtilizados: {conta.saques_diarios}')
@@ -301,9 +372,10 @@ class InterfaceBanco(Tk):
                 return
             
             conta.limite_saques = valor
-            self.banco.houve_alteracao = True
+            self.adicionar_log(set_limite_saques)
+            self.houve_alteracao = True
         
-        menubar = Menu(janela_usuario)
+        menubar = Menu(self.janela_conta)
         configuracoes = Menu(menubar, tearoff=0)
 
         configuracoes.add_command(label='Mudar limite do valor de saque', command=set_limite_valor_saque)
@@ -311,10 +383,22 @@ class InterfaceBanco(Tk):
 
         menubar.add_cascade(label='Configurações', menu=configuracoes)
 
-        janela_usuario.config(menu=menubar)
+        self.janela_conta.config(menu=menubar)
 
+        def on_closing():
+            self.janela_conta.destroy()
+            self.janela_conta = None
+        
+        self.janela_conta.protocol("WM_DELETE_WINDOW", on_closing)
 
-        janela_usuario.mainloop()
+    def adicionar_log(self, funcao):
+        self._log += f'{datetime.now()}: {funcao.__name__.upper()}\n'
+
+    @property
+    def log(self):
+        
+        if self._log: return self._log
+        return 'VAZIO'
 
 if __name__ == '__main__':
     try:
@@ -329,5 +413,6 @@ if __name__ == '__main__':
     if UIB.banco.houve_alteracao:
         if messagebox.askokcancel(title='Salvamento', message='Salvar alterações?'):
             with open('desafio-dio-sistema-bancario/twicebankdata.pkl', 'wb') as file:
+                UIB.banco.log = UIB.log
                 UIB.banco.houve_alteracao = False
                 pickle.dump(UIB.banco, file)
