@@ -481,7 +481,7 @@ class InterfaceBanco(Tk):
                 (
                     "Digite a quantidade do limite de saques\n"
                     + f"Atual: {conta.limite_saques}\n"
-                    + "Utilizados: {conta.saques_diarios}"
+                    + f"Utilizados: {conta.saques_diarios}"
                 ),
             )
             if not valor:
