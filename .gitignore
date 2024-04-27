@@ -1,5 +1,5 @@
 
-twicebankdata copy.pkl
+bankdata copy.pkl
 __pycache__/sistema_bancario_v3.cpython-312.pyc
-twicebankdata_old.pkl
+bankdata_old.pkl
 __pycache__/sistema_bancario_v3_interface.cpython-312.pyc
