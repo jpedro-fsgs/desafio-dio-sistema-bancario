@@ -546,7 +546,7 @@ if __name__ == "__main__":
     UIB = InterfaceBanco(twice_bank)
 
     if UIB.banco.houve_alteracao:
-        if messagebox.askokcancel(title="Salvamento", message="Salvar alterações?"):
+        if messagebox.askyesno(title="Salvamento", message="Salvar alterações?"):
             with open(Path(__file__).parent / "bankdata.pkl", "wb") as file:
                 UIB.banco.log = UIB.log
                 UIB.banco.houve_alteracao = False
