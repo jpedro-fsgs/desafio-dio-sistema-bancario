@@ -2,6 +2,13 @@
 
 #### Criando um Sistema Bancário com Python
 
+![Tela](screenshots/tela0.png)
+*Tela de Cadastro*
+
+![Tela1](screenshots/tela1.png)
+![Tela2](screenshots/tela2.png)
+*Tela de gerenciamento de contas*
+
 - **sistema_bancario_v1:** 
   Sistema bancário simples com três operações: depósito, saque e extrato. 
   Interface gráfica feita com a biblioteca tkinter.
